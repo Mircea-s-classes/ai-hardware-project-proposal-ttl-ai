@@ -1,4 +1,24 @@
+# Python environments
 .venv/
+venv_m1/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# Generated training data
+data/cnn_real/
+data/synthetic/
+
+# Model files
+*.pt
+*.pth
+*.mlpackage
+*.onnx
+*_history.json
+
+# Visualization and labeling outputs
+visualization_output/
+manual_labeling_samples/
+
+# macOS
+.DS_Store
