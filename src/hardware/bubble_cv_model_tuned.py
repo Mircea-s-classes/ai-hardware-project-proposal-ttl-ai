@@ -5,7 +5,7 @@ import numpy as np
 
 class BubbleCVModel:
     """Tuned CV model for real bubble detection"""
-    def __init__(self, min_diam_px=10, max_diam_px=300, min_circularity=0.3):
+    def __init__(self, min_diam_px=15, max_diam_px=250, min_circularity=0.4):
         self.min_diam_px = min_diam_px
         self.max_diam_px = max_diam_px
         self.min_circularity = min_circularity

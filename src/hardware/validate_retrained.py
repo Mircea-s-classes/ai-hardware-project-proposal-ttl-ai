@@ -20,7 +20,7 @@ def validate_retrained_model():
     print("=" * 80)
 
     # Paths
-    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles.mp4"
+    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles2.mp4"
     retrained_ckpt = Path(__file__).resolve().parents[2] / "data" / "cnn" / "small_unet_real_trained.pt"
 
     if not retrained_ckpt.exists():

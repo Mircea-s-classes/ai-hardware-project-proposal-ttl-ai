@@ -156,7 +156,7 @@ def extract_training_data(
     return saved_count
 
 if __name__ == "__main__":
-    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles.mp4"
+    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles2.mp4"
     output_dir = Path(__file__).resolve().parents[2] / "data" / "cnn_real"
 
     count = extract_training_data(
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         output_dir=output_dir,
         frame_stride=3,  # Sample every 3rd frame (33% of video)
         crop_size=256,
-        min_bubbles_per_frame=3  # Need at least 3 bubbles
+        min_bubbles_per_frame=2  # Need at least 2 bubbles (AIH_Bubbles2 may have fewer)
     )
 
     print(f"\nNext step: Retrain CNN on {count} real bubble samples")

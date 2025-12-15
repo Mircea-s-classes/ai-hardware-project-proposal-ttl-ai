@@ -39,6 +39,9 @@ class BubbleCVModelTuned:
         # Otsu threshold
         _, th = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
+        # Invert: bubbles should be white (255), background should be black (0)
+        th = cv2.bitwise_not(th)
+
         # Stronger morphology to clean up noise
         kernel = np.ones((5, 5), np.uint8)
         th_clean = cv2.morphologyEx(th, cv2.MORPH_OPEN, kernel, iterations=2)
@@ -48,6 +51,10 @@ class BubbleCVModelTuned:
         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
             th_clean, connectivity=8
         )
+
+        # Create output mask with ONLY filtered bubbles (not full threshold)
+        h_frame, w_frame = frame_bgr.shape[:2]
+        output_mask = np.zeros((h_frame, w_frame), dtype=np.uint8)
 
         bubbles = []
         for i in range(1, num_labels):
@@ -76,9 +83,11 @@ class BubbleCVModelTuned:
 
             # Filter by position (exclude edge artifacts)
             margin = 5
-            h_frame, w_frame = frame_bgr.shape[:2]
             if x < margin or y < margin or (x + w) > (w_frame - margin) or (y + h) > (h_frame - margin):
                 continue
+
+            # Add this bubble to the output mask
+            output_mask[labels == i] = 255
 
             bubbles.append({
                 "x": int(x), "y": int(y),
@@ -86,7 +95,7 @@ class BubbleCVModelTuned:
                 "diam_px": float(diam_px),
             })
 
-        return th_clean, bubbles
+        return output_mask, bubbles
 
 def interactive_tuning():
     """
@@ -96,7 +105,7 @@ def interactive_tuning():
     print(" CV Model Parameter Tuning")
     print("=" * 80)
 
-    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles.mp4"
+    video_path = Path(__file__).resolve().parents[2] / "videos" / "AIH_Bubbles2.mp4"
 
     # Load sample frames
     cap = cv2.VideoCapture(str(video_path))
@@ -178,11 +187,18 @@ class BubbleCVModel:
 
         _, th = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
+        # Invert: bubbles should be white (255), background should be black (0)
+        th = cv2.bitwise_not(th)
+
         kernel = np.ones((5, 5), np.uint8)
         th_clean = cv2.morphologyEx(th, cv2.MORPH_OPEN, kernel, iterations=2)
         th_clean = cv2.morphologyEx(th_clean, cv2.MORPH_CLOSE, kernel, iterations=1)
 
         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(th_clean, connectivity=8)
+
+        # Create output mask with ONLY filtered bubbles (not full threshold)
+        h_frame, w_frame = frame_bgr.shape[:2]
+        output_mask = np.zeros((h_frame, w_frame), dtype=np.uint8)
 
         bubbles = []
         for i in range(1, num_labels):
@@ -206,10 +222,12 @@ class BubbleCVModel:
                     if circularity < self.min_circularity:
                         continue
 
-            h_frame, w_frame = frame_bgr.shape[:2]
             margin = 5
             if x < margin or y < margin or (x + w) > (w_frame - margin) or (y + h) > (h_frame - margin):
                 continue
+
+            # Add this bubble to the output mask
+            output_mask[labels == i] = 255
 
             bubbles.append({{
                 "x": int(x), "y": int(y),
@@ -217,7 +235,7 @@ class BubbleCVModel:
                 "diam_px": float(diam_px),
             }})
 
-        return th_clean, bubbles
+        return output_mask, bubbles
 ''')
 
     print(f"✓ Saved tuned model to: {output_path}")

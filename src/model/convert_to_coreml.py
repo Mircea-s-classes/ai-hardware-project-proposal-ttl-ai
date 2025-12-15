@@ -13,14 +13,14 @@ def convert_model():
     print("=" * 70)
 
     # Paths
-    ckpt_path = Path(__file__).resolve().parents[2] / "data" / "cnn" / "small_unet_real_trained.pt"
+    ckpt_path = Path(__file__).resolve().parents[2] / "data" / "cnn" / "small_unet_manual_trained.pt"
     output_dir = ckpt_path.parent
 
     # Load PyTorch model
     print(f"\n[1/5] Loading PyTorch model: {ckpt_path}")
     model = SmallUNet()
     state = torch.load(ckpt_path, map_location="cpu")
-    model.load_state_dict(state)
+    model.load_state_dict(state['model_state_dict'])
     model.eval()
     print("✓ Model loaded")
 
@@ -60,7 +60,7 @@ def convert_model():
     mlmodel_fp16.output_description["logits"] = "Segmentation logits, shape (1,1,256,256)"
 
     # Save FP16 model
-    fp16_path = output_dir / "small_unet_real_fp16.mlpackage"
+    fp16_path = output_dir / "small_unet_manual_fp16.mlpackage"
     mlmodel_fp16.save(str(fp16_path))
     print(f"✓ Saved FP16 model: {fp16_path}")
 
@@ -78,7 +78,7 @@ def convert_model():
     mlmodel_fp32.author = "Bubble Detection Team"
     mlmodel_fp32.short_description = "SmallUNet for bubble segmentation (FP32, baseline)"
 
-    fp32_path = output_dir / "small_unet_real_fp32.mlpackage"
+    fp32_path = output_dir / "small_unet_manual_fp32.mlpackage"
     mlmodel_fp32.save(str(fp32_path))
     print(f"✓ Saved FP32 model: {fp32_path}")
 
