@@ -1,0 +1,18 @@
+{
+  "N": 79,
+  "thr": 0.22,
+  "fp32_ckpt": "model/real_water_bb_nl_unet.pt",
+  "int8_ts": "model/real_water_bb_nl_unet_int8_ts.pt",
+  "abs_err_fp32": {
+    "mean": 0.43037974683544306,
+    "median": 0.0,
+    "p95": 2.0,
+    "max": 2.0
+  },
+  "abs_err_int8": {
+    "mean": 0.4050632911392405,
+    "median": 0.0,
+    "p95": 2.0,
+    "max": 2.0
+  }
+}

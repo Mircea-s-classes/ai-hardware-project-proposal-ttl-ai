@@ -1,0 +1,56 @@
+{
+  "model": "model/real_water_bb_nl_unet.pt",
+  "data_root": "data/cnn/real_water_bb_nl",
+  "split": "val",
+  "n": 79,
+  "thr": 0.22,
+  "postprocess": {
+    "min_dist_to_edge": 18,
+    "min_area": 40,
+    "max_area": 12000,
+    "min_solidity": 0.75,
+    "min_ellipticity": 0.25,
+    "min_circularity": 0.28,
+    "max_aspect_ratio": 5.0,
+    "min_major_px": 45,
+    "min_minor_px": 25,
+    "min_ellipse_area": 1300.0,
+    "close_iters": 2,
+    "ellipse_refill": true
+  },
+  "dice_raw": {
+    "mean": 0.3372367416665006,
+    "median": 0.4966683089733124,
+    "p95": 0.6381453990936279,
+    "min": 2.1454622800565204e-10,
+    "max": 0.6656569242477417
+  },
+  "iou_raw": {
+    "mean": 0.2326103060214816,
+    "median": 0.33037838339805603,
+    "p95": 0.46859784424304957,
+    "min": 2.1454622800565204e-10,
+    "max": 0.49886491894721985
+  },
+  "dice_post": {
+    "mean": 0.626704930927773,
+    "median": 0.6274824738502502,
+    "p95": 1.0,
+    "min": 1.1183180770313328e-10,
+    "max": 1.0
+  },
+  "iou_post": {
+    "mean": 0.5455374924712437,
+    "median": 0.4571762681007385,
+    "p95": 1.0,
+    "min": 1.1183180770313328e-10,
+    "max": 1.0
+  },
+  "bubble_count_abs_error": {
+    "mean": 0.43037974683544306,
+    "median": 0.0,
+    "p95": 2.0,
+    "min": 0.0,
+    "max": 2.0
+  }
+}

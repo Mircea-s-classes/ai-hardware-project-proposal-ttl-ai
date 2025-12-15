@@ -1,0 +1,72 @@
+{
+  "tag": "laptop_dml_unique_debug",
+  "device": "privateuseone:0",
+  "threads": 8,
+  "model": "model/real_water_bb_nl_unet.pt",
+  "video": "data/raw/real_water_bb_nl/bb_nl_clip1.mp4",
+  "model_size": 512,
+  "every_n": 1,
+  "thr": 0.22,
+  "postprocess": {
+    "min_dist_to_edge": 18,
+    "min_area": 40,
+    "max_area": 12000,
+    "min_solidity": 0.75,
+    "min_ellipticity": 0.25,
+    "min_circularity": 0.28,
+    "max_aspect_ratio": 5.0,
+    "min_major_px": 45,
+    "min_minor_px": 25,
+    "min_ellipse_area": 1300.0,
+    "close_iters": 2,
+    "ellipse_refill": true
+  },
+  "timing_ms": {
+    "preprocess": {
+      "median": 1.7916499928105623,
+      "p95": 2.395385014824569,
+      "mean": 1.8700726667884737,
+      "min": 1.407700008712709,
+      "max": 10.23769995663315
+    },
+    "model": {
+      "median": 1.9445499929133803,
+      "p95": 3.2004749606130343,
+      "mean": 2.335692498309072,
+      "min": 1.579799980390817,
+      "max": 59.308000025339425
+    },
+    "postprocess": {
+      "median": 2.993150003021583,
+      "p95": 4.482510016532614,
+      "mean": 3.1655680013742917,
+      "min": 2.216000051703304,
+      "max": 6.425999978091568
+    },
+    "total": {
+      "median": 21.69829999911599,
+      "p95": 26.560145008261312,
+      "mean": 22.15805449959589,
+      "min": 17.080699966754764,
+      "max": 86.31349995266646
+    }
+  },
+  "bubble_count": {
+    "mean": 0.25833333333333336,
+    "median": 0.0,
+    "min": 0,
+    "max": 4
+  },
+  "unique_bubbles": {
+    "enabled": true,
+    "total_unique_final": 28,
+    "params": {
+      "min_area": 20,
+      "max_dist": 80.0,
+      "max_age": 30,
+      "confirm_frames": 1
+    }
+  },
+  "overlay_saved": true,
+  "overlay_out": "outputs/overlay_laptop_dml_unique_debug.mp4"
+}
