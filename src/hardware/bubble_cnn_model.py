@@ -7,7 +7,15 @@ from small_unet import SmallUNet
 class BubbleCNNModel:
     def __init__(self, ckpt_path, min_diam_px=5, device=None):
         self.min_diam_px = min_diam_px
-        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # Prioritize: MPS (M1) > CUDA (NVIDIA) > CPU
+        if device:
+            self.device = device
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        elif torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
 
         # load model
         self.model = SmallUNet().to(self.device)
