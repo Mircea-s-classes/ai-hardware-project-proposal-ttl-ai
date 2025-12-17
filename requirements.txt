@@ -1,0 +1,26 @@
+# Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Computer Vision
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+
+# Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# ONNX Export & Runtime
+onnx>=1.14.0
+onnxruntime>=1.15.0
+onnxscript>=0.1.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Utilities
+pathlib>=1.0.1
+tqdm>=4.65.0
+
+# Hailo Platform (for Raspberry Pi deployment)
+# hailort>=4.15.0  # Install separately on Raspberry Pi
