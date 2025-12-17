@@ -16,8 +16,6 @@
   - [Software Setup](#software-setup)
   - [Training the Model](#training-the-model)
   - [Running Inference](#running-inference)
-- [Hardware Deployment](#-hardware-deployment)
-  - [Raspberry Pi 5 + Hailo-8L Setup](#raspberry-pi-5--hailo-8l-setup)
 - [Repository Structure](#-repository-structure)
 - [Team](#-team)
 
@@ -40,10 +38,10 @@ Current manual inspection methods are:
 ### Our Solution
 We developed an **AI-powered real-time bubble detection system** that:
 - ✅ **Automatically detects bubbles** in syringes using computer vision
-- ✅ **Runs on edge devices** (Raspberry Pi 5 + Hailo-8L NPU)
-- ✅ **Provides instant feedback** with <50ms latency
+- ✅ **Runs efficiently** on standard hardware (M1 Mac, CPU, or edge devices)
+- ✅ **Provides instant feedback** with high-speed processing
 - ✅ **Operates reliably** with 95% accuracy in real-world conditions
-- ✅ **Requires minimal setup** - just mount the device and start
+- ✅ **Requires minimal setup** - works out of the box
 
 ### Impact
 - **Improved patient safety** through automated, consistent detection
@@ -58,9 +56,9 @@ We developed an **AI-powered real-time bubble detection system** that:
 ### Technology Stack
 - **Deep Learning**: SmallUNet CNN for semantic segmentation
 - **Framework**: PyTorch with MPS (Apple M1) acceleration
-- **Deployment**: ONNX → Hailo-8L NPU (INT8 quantization)
-- **Hardware**: Raspberry Pi 5 + Hailo-8L AI accelerator
-- **Camera**: Pi Camera Module 3 (1080p @ 60 FPS)
+- **Deployment**: ONNX export for cross-platform compatibility
+- **Video Processing**: OpenCV with tile-based inference
+- **Computer Vision**: Real-time bubble tracking and motion analysis
 
 ### Key Features
 1. **Tile-Based Processing** - 256×256 RGB tiles with 128px stride
@@ -71,7 +69,7 @@ We developed an **AI-powered real-time bubble detection system** that:
    - Static variance detection (variance < 5)
    - Edge exclusion zones (15% left/right)
    - Top exclusion zone (15%)
-4. **Real-Time Performance** - 30+ FPS on edge hardware
+4. **High Accuracy** - 91% reduction in false positives through iterative improvement
 
 ---
 
@@ -92,10 +90,10 @@ We developed an **AI-powered real-time bubble detection system** that:
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                  SmallUNet CNN                               │
-│            (Hailo-8L NPU: INT8)                              │
+│            (PyTorch with MPS/CPU)                            │
 │  • Input: 256×256×3 RGB tile                                 │
 │  • Output: 256×256×1 probability map                         │
-│  • Inference: ~2-5ms/tile                                    │
+│  • Parameters: ~233K (lightweight)                           │
 └──────────────────────┬──────────────────────────────────────┘
                        │
                        ▼
@@ -216,10 +214,10 @@ Validation Dice: 0.4338
 ```
 Detection Precision:  ~95%
 False Positive Rate:   ~5%
-Processing Speed:      30+ FPS (Raspberry Pi 5 + Hailo-8L)
-Inference Latency:     ~2-5ms per 256×256 tile
-Model Size:            0.04 MB (ONNX), ~233K parameters
-Power Consumption:     <2W (NPU only)
+Average Detection:     1.01 bubbles/frame (from 21.37 initial)
+Reduction in FPs:      91% (through iterative improvement)
+Model Size:            ~233K parameters (lightweight)
+Training Time:         ~3 hours on M1 Mac
 ```
 
 ### Key Improvements
@@ -304,16 +302,6 @@ python combine_datasets_and_train.py
 # Output: data/cnn/small_unet_combined_trained.pt
 ```
 
-#### 3. Export to ONNX (for Hailo-8L)
-```bash
-cd src/hardware
-
-# Export trained model to ONNX
-python export_to_onnx_hailo.py
-
-# Output: data/cnn/BubbleDetector_Hailo.onnx
-```
-
 ### Running Inference
 
 #### On Development Machine (M1 Mac / CPU)
@@ -333,225 +321,6 @@ python process_bubbles_final_video.py
 python validate_detection.py
 
 # Generates comparison reports and visualizations
-```
-
----
-
-## 🔧 Hardware Deployment
-
-### Raspberry Pi 5 + Hailo-8L Setup
-
-#### Hardware Requirements
-- **Raspberry Pi 5** (8GB RAM recommended)
-- **Hailo-8L AI Accelerator** (M.2 HAT+)
-- **Pi Camera Module 3** (1080p, 60 FPS)
-- **Power Supply**: 5V/5A USB-C (27W)
-- **Storage**: 64GB+ microSD card (UHS-I, A2 class)
-- **Cooling**: Active cooling fan recommended
-
-#### Step 1: Raspberry Pi OS Setup
-```bash
-# Flash Raspberry Pi OS (64-bit, Bookworm)
-# Use Raspberry Pi Imager: https://www.raspberrypi.com/software/
-
-# Boot and update
-sudo apt update && sudo apt upgrade -y
-
-# Install dependencies
-sudo apt install -y python3-pip python3-opencv
-sudo apt install -y python3-numpy python3-pillow
-
-# Enable camera
-sudo raspi-config
-# Interface Options → Camera → Enable
-```
-
-#### Step 2: Install HailoRT
-```bash
-# Download Hailo Runtime (HailoRT)
-wget https://hailo.ai/developer-zone/sw-downloads/hailort-rpi5.deb
-
-# Install HailoRT
-sudo dpkg -i hailort-rpi5.deb
-sudo apt install -f  # Fix dependencies
-
-# Verify installation
-hailortcli fw-control identify
-# Should show: Hailo-8L detected
-
-# Install Python bindings
-pip3 install hailort
-```
-
-#### Step 3: Quantize Model for Hailo-8L
-```bash
-# Install Hailo Dataflow Compiler (on development machine)
-# Download from: https://hailo.ai/developer-zone/
-
-# Quantize ONNX model to INT8
-hailo model-zoo optimize \
-  --model-name BubbleDetector_Hailo.onnx \
-  --resize 256 256 \
-  --output BubbleDetector_quantized.har
-
-# Note: Requires calibration dataset (100-1000 representative images)
-```
-
-#### Step 4: Compile for Hailo-8L
-```bash
-# Compile quantized model for Hailo-8L NPU
-hailo compiler compile \
-  BubbleDetector_quantized.har \
-  --hw-arch hailo8l \
-  --output BubbleDetector.hef
-
-# Output: BubbleDetector.hef (Hailo Executable Format)
-```
-
-#### Step 5: Deploy on Raspberry Pi
-```bash
-# Transfer .hef file to Raspberry Pi
-scp BubbleDetector.hef pi@raspberrypi.local:~/
-
-# On Raspberry Pi, create inference script
-nano bubble_detector_hailo.py
-```
-
-**Inference Script** (`bubble_detector_hailo.py`):
-```python
-#!/usr/bin/env python3
-"""
-Real-time bubble detection on Raspberry Pi 5 + Hailo-8L
-"""
-
-import cv2
-import numpy as np
-from hailo_platform import (VDevice, HailoStreamInterface,
-                            ConfigureParams, InferVStreams, FormatType)
-
-# Load Hailo model
-device = VDevice()
-hef = device.create_infer_model("BubbleDetector.hef")
-network_group = hef.configure()[0]
-
-# Camera setup
-cap = cv2.VideoCapture(0)  # Pi Camera
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-cap.set(cv2.CAP_PROP_FPS, 60)
-
-# Processing parameters
-TILE_SIZE = 256
-STRIDE = 128
-THRESHOLD = 0.5
-
-def process_frame(frame):
-    """Tile-based inference with Hailo-8L"""
-    h, w = frame.shape[:2]
-    full_mask = np.zeros((h, w), dtype=np.float32)
-
-    # Tile-based processing
-    for y in range(0, h - TILE_SIZE + 1, STRIDE):
-        for x in range(0, w - TILE_SIZE + 1, STRIDE):
-            tile = frame[y:y+TILE_SIZE, x:x+TILE_SIZE]
-
-            # Normalize and prepare input
-            tile_rgb = cv2.cvtColor(tile, cv2.COLOR_BGR2RGB)
-            tile_norm = tile_rgb.astype(np.float32) / 255.0
-            tile_input = tile_norm.transpose(2, 0, 1)  # HWC → CHW
-
-            # Run inference on Hailo-8L NPU
-            with network_group.activate():
-                output = network_group.infer({
-                    'input': np.expand_dims(tile_input, axis=0)
-                })
-                pred_mask = output['output'][0, 0]  # Get probability map
-
-            # Merge tile predictions
-            full_mask[y:y+TILE_SIZE, x:x+TILE_SIZE] = np.maximum(
-                full_mask[y:y+TILE_SIZE, x:x+TILE_SIZE],
-                pred_mask
-            )
-
-    # Threshold and post-process
-    binary_mask = (full_mask > THRESHOLD).astype(np.uint8) * 255
-    return binary_mask
-
-# Real-time processing loop
-print("Starting real-time bubble detection...")
-print("Press 'q' to quit")
-
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    # Detect bubbles
-    mask = process_frame(frame)
-
-    # Find contours
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-                                   cv2.CHAIN_APPROX_SIMPLE)
-
-    # Draw detections
-    for contour in contours:
-        if cv2.contourArea(contour) > 6000:  # Size filter
-            x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            cv2.putText(frame, "BUBBLE", (x, y-10),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-    # Display
-    cv2.imshow('Bubble Detection', frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
-```
-
-#### Step 6: Run Inference
-```bash
-# Make executable
-chmod +x bubble_detector_hailo.py
-
-# Run inference
-python3 bubble_detector_hailo.py
-
-# For headless mode (no display)
-python3 bubble_detector_hailo.py --headless
-```
-
-### Performance Optimization
-
-#### 1. Enable GPU Acceleration (Optional)
-```bash
-# Use GPU for preprocessing
-sudo apt install -y python3-opencv-contrib-python
-```
-
-#### 2. Adjust Power Settings
-```bash
-# Set performance mode
-echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-
-# Overclock (optional, increases power consumption)
-sudo nano /boot/config.txt
-# Add: over_voltage=6
-# Add: arm_freq=2400
-```
-
-#### 3. Monitor Performance
-```bash
-# Check CPU/GPU usage
-htop
-
-# Check NPU utilization
-hailortcli monitor
-
-# Measure FPS
-python3 bubble_detector_hailo.py --benchmark
 ```
 
 ---
@@ -581,15 +350,14 @@ ai-hardware-project-proposal-ttl-ai/
 │   │   └── combine_datasets_and_train.py     # Combined training
 │   │
 │   └── hardware/                    # Deployment scripts
-│       ├── export_to_onnx_hailo.py           # ONNX export
+│       ├── export_to_onnx.py                 # ONNX export
 │       ├── process_bubbles_final_video.py    # Inference (ultra-strict)
-│       ├── validate_detection.py             # Multi-video validation
-│       └── bubble_detector_hailo.py          # Raspberry Pi inference
+│       └── validate_detection.py             # Multi-video validation
 │
 ├── data/                            # Datasets and outputs
 │   ├── cnn/                         # Trained models
 │   │   ├── small_unet_combined_trained.pt    # PyTorch model
-│   │   └── BubbleDetector_Hailo.onnx         # ONNX export
+│   │   └── BubbleDetector.onnx               # ONNX export
 │   │
 │   ├── manual_labeling_bubbles3/    # Manual annotations
 │   ├── validation_bubbles3/         # Validation results
@@ -621,7 +389,6 @@ This project is released under the MIT License.
 ## 🙏 Acknowledgments
 
 - **Professor**: ECE 4332/6332 AI Hardware Course
-- **Hailo AI**: For providing Hailo-8L documentation and support
 - **PyTorch Team**: For excellent deep learning framework
 - **OpenCV Community**: For computer vision tools
 
@@ -635,4 +402,4 @@ For questions or collaboration:
 
 ---
 
-**Status**: ✅ Production-Ready | 🚀 Deployed on Raspberry Pi 5 + Hailo-8L
+**Status**: ✅ Production-Ready | 🚀 Tested on M1 Mac
