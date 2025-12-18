@@ -21,7 +21,7 @@
 
 ---
 
-## 🎯 Motivation
+## 🎯Motivation
 
 ### The Problem
 Air bubbles in medical syringes pose significant risks during intravenous (IV) injections and infusions. Even small bubbles can cause:
@@ -37,11 +37,11 @@ Current manual inspection methods are:
 
 ### Our Solution
 We developed an **AI-powered real-time bubble detection system** that:
-- ✅ **Automatically detects bubbles** in syringes using computer vision
-- ✅ **Runs efficiently** on standard hardware (M1 Mac, CPU, or edge devices)
-- ✅ **Provides instant feedback** with high-speed processing
-- ✅ **Operates reliably** with 95% accuracy in real-world conditions
-- ✅ **Requires minimal setup** - works out of the box
+-  **Automatically detects bubbles** in syringes using computer vision
+-  **Runs efficiently** on standard hardware (M1 Mac, CPU, or edge devices)
+-  **Provides instant feedback** with high-speed processing
+-  **Operates reliably** with 95% accuracy in real-world conditions
+-  **Requires minimal setup** - works out of the box
 
 ### Impact
 - **Improved patient safety** through automated, consistent detection
@@ -51,7 +51,7 @@ We developed an **AI-powered real-time bubble detection system** that:
 
 ---
 
-## 🏗 Project Overview
+## Project Overview
 
 ### Technology Stack
 - **Deep Learning**: SmallUNet CNN for semantic segmentation
@@ -73,7 +73,7 @@ We developed an **AI-powered real-time bubble detection system** that:
 
 ---
 
-## 🧠 System Architecture
+##  System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -144,7 +144,7 @@ Output: 256×256×1 Probability Map
 
 ---
 
-## 📊 Dataset & Training
+##  Dataset & Training
 
 ### Dataset Composition
 | Source | Samples | Type | Description |
@@ -184,18 +184,18 @@ Validation Dice: 0.4338
 
 ---
 
-## 🎯 Results
+##  Results
 
 ### Detection Accuracy Evolution
 
 | Iteration | Method | Avg Bubbles/Frame | False Positive Rate | Status |
 |-----------|--------|-------------------|---------------------|--------|
-| **Raw CNN** | No filtering | 21.37 | 95.1% | ❌ Unusable |
-| **+Clustering** | 15px dilation | 13.31 | 85.6% | ❌ Too high |
-| **+Motion Tracking** | 20px threshold | 7.87 | 56.2% | ⚠️ Improving |
-| **+Size Filter (3000px)** | Area threshold | 3.74 | 48.8% | ⚠️ Better |
-| **+Static Detection** | Variance < 10 | 2.79 | 31.4% | ⚠️ Close |
-| **+Ultra-Strict (6000px)** | Edges + stricter | **1.01** | **~5%** | ✅ **PERFECT** |
+| **Raw CNN** | No filtering | 21.37 | 95.1% |  Unusable |
+| **+Clustering** | 15px dilation | 13.31 | 85.6% |  Too high |
+| **+Motion Tracking** | 20px threshold | 7.87 | 56.2% | ⚠️Improving |
+| **+Size Filter (3000px)** | Area threshold | 3.74 | 48.8% | ⚠️Better |
+| **+Static Detection** | Variance < 10 | 2.79 | 31.4% | Close |
+| **+Ultra-Strict (6000px)** | Edges + stricter | **1.01** | **~5%** |  **PERFECT** |
 
 **Achievement**: **91% reduction in false positives** through iterative refinement
 
@@ -203,11 +203,11 @@ Validation Dice: 0.4338
 
 | Video | Frames | Bubbles Detected | Avg/Frame | Status |
 |-------|--------|------------------|-----------|--------|
-| AIH_Bubbles.mp4 | 190 | 7 | 0.04 | ✅ Few bubbles (correct) |
-| AIH_Bubbles2.mp4 | 282 | 113 | 0.40 | ✅ Moderate detection |
-| AIH_Bubbles3.mp4 | 183 | 350 | 1.91 | ✅ Best performance |
-| **AIH_Bubbles_Final.mp4** | **907** | **918** | **1.01** | ✅ **Real-world test** |
-| **TOTAL** | **1,562** | **1,388** | **0.89** | ✅ **Production-ready** |
+| AIH_Bubbles.mp4 | 190 | 7 | 0.04 |  Few bubbles (correct) |
+| AIH_Bubbles2.mp4 | 282 | 113 | 0.40 |  Moderate detection |
+| AIH_Bubbles3.mp4 | 183 | 350 | 1.91 |  Best performance |
+| **AIH_Bubbles_Final.mp4** | **907** | **918** | **1.01** |  **Real-world test** |
+| **TOTAL** | **1,562** | **1,388** | **0.89** |  **Production-ready** |
 
 ### Performance Metrics
 
@@ -222,22 +222,22 @@ Training Time:         ~3 hours on M1 Mac
 
 ### Key Improvements
 
-1. **Light Refraction Understanding** ✅
+1. **Light Refraction Understanding** 
    - Problem: Counted each bright spot as separate bubble
    - Solution: 15px morphological dilation merges refraction patterns
    - Result: Each cluster = 1 bubble
 
-2. **Static Object Filtering** ✅
+2. **Static Object Filtering** 
    - Problem: Detecting syringe markings, numbers, scratches
    - Solution: Motion tracking + position variance analysis
    - Result: Only moving objects counted as bubbles
 
-3. **Size-Based Filtering** ✅
+3. **Size-Based Filtering** 
    - Problem: Tiny false positives on edges
    - Solution: 6000px minimum area threshold
    - Result: 27% reduction in detections (332 fewer false positives)
 
-4. **Edge Exclusion** ✅
+4. **Edge Exclusion** 
    - Problem: Syringe text/markings on edges
    - Solution: Exclude 15% left/right zones
    - Result: Eliminated edge artifacts
@@ -325,7 +325,7 @@ python validate_detection.py
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 ai-hardware-project-proposal-ttl-ai/
@@ -372,21 +372,25 @@ ai-hardware-project-proposal-ttl-ai/
 
 ---
 
-## 👥 Team
+##  Team
 
 **Team TTL-AI**
 - ECE 4332 / ECE 6332 — AI Hardware
 - Fall 2025
+- Landon Campbell — integration & performance
+- Thomas Keyes — open CV software & CNN training
+- Tiger Zhang — CV pipeline & CNN training/deployment
+
 
 ---
 
-## 📜 License
+##  License
 
 This project is released under the MIT License.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Professor**: ECE 4332/6332 AI Hardware Course
 - **PyTorch Team**: For excellent deep learning framework
@@ -394,7 +398,7 @@ This project is released under the MIT License.
 
 ---
 
-## 📞 Contact
+##  Contact
 
 For questions or collaboration:
 - GitHub Issues: [Create an issue](https://github.com/Mircea-s-classes/ai-hardware-project-proposal-ttl-ai/issues)
@@ -402,4 +406,4 @@ For questions or collaboration:
 
 ---
 
-**Status**: ✅ Production-Ready | 🚀 Tested on M1 Mac
+**Status**:  Production-Ready |  Tested on M1 Mac / Raspi 5 / AMD CPU/GPU
